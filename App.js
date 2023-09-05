@@ -23,7 +23,6 @@ export default function App() {
           const position = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
-          console.log(latitude, longitude);
   
           // Здесь вы можете установить значение в состояние
           setLatitude(latitude);
@@ -33,7 +32,9 @@ export default function App() {
           const response = await axios.get(
             `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
           );
-          setWeatherImages((weatherImages) => [`http://openweathermap.org/img/w/${response.data.weather[0].icon}`])
+          console.log(response.data.weather[0])
+          setWeatherImages((weatherImages) => [`https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`])
+          setWeatherImages((weatherImages) => [`https://openweathermap.org/img/wn/10d@2x.png`])
           console.log(response.data);
           console.log(weatherImages);
         } else {
@@ -51,7 +52,7 @@ export default function App() {
     <View style={styles.container}>
       {/* <StatusBar style="dark-content" /> */}
       <Text style={{ color: '#000' }}>Test text</Text>
-      <Image style={styles.weatherImage} source={{ uri: 'https://reactnative.dev/img/tiny_logo.png',}}/>
+      <Image style={styles.weatherImage} source={{ uri: weatherImages[0],}}/>
       <Image
         source={{
           uri: 'https://reactnative.dev/img/tiny_logo.png',

@@ -18,7 +18,8 @@ const styles = StyleSheet.create({
   weatherImage: {
     width: 100,
     height: 100,
-    
+    borderWidth: 2,
+    borderColor: 'black',
   }
   // text: {
   //   fontSize: 20,
