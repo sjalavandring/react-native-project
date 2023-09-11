@@ -7,11 +7,12 @@ import axios from 'axios';
 import * as Location from 'expo-location'; 
 
 export default function App() {
-  const apiKey = '17ce59ebe9bfc2a094ca4ab9d2389caa';
+  // const apiKey = '17ce59ebe9bfc2a094ca4ab9d2389caa';
+  apiKey = 'db4cbd26af4a4d54b16175322230709'
 
-  let [latitude, setLatitude] = useState(0)
-  let [longitude, setLongitude] = useState(0)
-  let [weatherImages, setWeatherImages] = useState([])
+  let [latitude, setLatitude] = useState(0);
+  let [longitude, setLongitude] = useState(0);
+  let [weatherImages, setWeatherImages] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,18 +31,21 @@ export default function App() {
   
           // Запрос погодных данных
           const response = await axios.get(
-            `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
+            // `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
+            // `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&timezone=Europe%2FMoscow`
+            // `https://api.weatherapi.com/v1/current.json?key=db4cbd26af4a4d54b16175322230709&q=${latitude},${longitude}`
+            `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}`
           );
-          console.log(response.data.weather[0])
-          setWeatherImages((weatherImages) => [`https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`])
-          setWeatherImages((weatherImages) => [`https://openweathermap.org/img/wn/10d@2x.png`])
-          console.log(response.data);
-          console.log(weatherImages);
+          console.log(response.data.current.condition.icon) 
+          setWeatherImages((weatherImages) => [`https:${response.data.current.condition.icon}`])
+          // setWeatherImages((weatherImages) => [`https://openweathermap.org/img/wn/10d@2x.png`])
+          console.log(response);
+          // console.log(weatherImages);
         } else {
           console.log('Location permission not granted');
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error); 
       }
     };
   
@@ -49,22 +53,13 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      {/* <StatusBar style="dark-content" /> */}
-      <Text style={{ color: '#000' }}>Test text</Text>
-      <Image style={styles.weatherImage} source={{ uri: weatherImages[0],}}/>
-      <Image
-        source={{
-          uri: 'https://reactnative.dev/img/tiny_logo.png',
-        }}
-        style={
-          {
-            maxWidth: 300,
-            width: 100,
-            height: 100
-          }
-        }
-      />
+    <View style={styles.main}>
+      <View style={styles.container}>
+        <View style={styles.weatherBlock}>
+          <Image style={styles.weatherImage} source={{ uri: weatherImages[0],}}/>
+          <Text style={{ color: '#000' }}>Test text</Text>
+        </View>
+      </View>
     </View>
   );
 }
