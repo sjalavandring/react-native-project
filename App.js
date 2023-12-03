@@ -1,18 +1,21 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, Image } from 'react-native';
-import styles from './StyleSheet';
+import { Text, View, Image, FlatList, SafeAreaView, ImageBackground} from 'react-native';
+import mainStyles from './StyleSheet';
+import WeatherCard from './Components/WeatherCard/WeatherCard';
 import { useEffect, useState } from 'react'
 import axios from 'axios';
+import styles from './StyleSheet';
 
 import * as Location from 'expo-location'; 
 
 export default function App() {
-  // const apiKey = '17ce59ebe9bfc2a094ca4ab9d2389caa';
-  apiKey = 'db4cbd26af4a4d54b16175322230709'
+  apiKey = '31d7fed8e69148a58cd193626230212'
 
-  let [latitude, setLatitude] = useState(0);
-  let [longitude, setLongitude] = useState(0);
-  let [weatherImages, setWeatherImages] = useState([]);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
+  const [weatherInfo, setWeatherInfo] = useState()
+  const [weatherMeasurSystem, setWeatherMeasurSystem] = useState('celsius')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,19 +31,14 @@ export default function App() {
           // Здесь вы можете установить значение в состояние
           setLatitude(latitude);
           setLongitude(longitude);
-  
           // Запрос погодных данных
           const response = await axios.get(
-            // `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
-            // `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&timezone=Europe%2FMoscow`
-            // `https://api.weatherapi.com/v1/current.json?key=db4cbd26af4a4d54b16175322230709&q=${latitude},${longitude}`
-            `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${latitude},${longitude}`
+            // `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
+            `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${latitude},${longitude}`
           );
-          console.log(response.data.current.condition.icon) 
-          setWeatherImages((weatherImages) => [`https:${response.data.current.condition.icon}`])
-          // setWeatherImages((weatherImages) => [`https://openweathermap.org/img/wn/10d@2x.png`])
-          console.log(response);
-          // console.log(weatherImages);
+
+          setWeatherInfo(response.data)
+          weatherInfo && console.log(weatherInfo.forecast.forecastday[0].hour)
         } else {
           console.log('Location permission not granted');
         }
@@ -48,18 +46,55 @@ export default function App() {
         console.error('Error:', error); 
       }
     };
-  
     fetchData(); // Вызываем функцию fetchData внутри useEffect
   }, []);
 
+  if (!weatherInfo) {
+      return null;
+  }
+
+  function toggleMeasurSystem(systemName) {
+    return (systemName == 'celsius') ?  setWeatherMeasurSystem('fahrenheit') : setWeatherMeasurSystem('celsius')
+  }
+
   return (
-    <View style={styles.main}>
-      <View style={styles.container}>
-        <View style={styles.weatherBlock}>
-          <Image style={styles.weatherImage} source={{ uri: weatherImages[0],}}/>
-          <Text style={{ color: '#000' }}>Test text</Text>
+    <React.Fragment>
+      <View style={styles.body}>
+
+        <View style={styles.header}>
+          <View style={[styles.container, styles.headerContent]}>
+
+            <View style={styles.location}>
+              <Image style={styles.locationImage} source={require('./assets/location.png')}/>
+              <Text style={styles.locationName}>{weatherInfo.location.country}, {weatherInfo.location.name}</Text>
+            </View>
+
+            <View style={styles.headerMenu}>
+              <View style={styles.headerMenuLine} />
+              <View style={styles.headerMenuLine} />
+              <View style={styles.headerMenuLine} />
+            </View>
+
+          </View>
         </View>
+
+        <View style={styles.main}>
+          <SafeAreaView style={[ styles.mainContent]}>
+            {weatherInfo ? (
+              <FlatList 
+                data={weatherInfo.forecast.forecastday[0].hour}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item, index }) => {
+                    return <WeatherCard weatherInfo={item} currentHour={index} weatherMeasurSystem={weatherMeasurSystem} toggleMeasurSystem={toggleMeasurSystem}/>;
+                }}
+              />
+            ) : (
+              <Text>Error fetching weather data</Text>
+            )}
+          </SafeAreaView>
+        </View>
+
       </View>
-    </View>
+    </React.Fragment>
   );
 }
