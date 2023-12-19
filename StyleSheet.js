@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import weatherCardStyles from './Components/WeatherCard/WeatherCardStyles';
+import MapStyles from './Components/Map/MapStyles';
 
 const mainStyles = StyleSheet.create({
   body: {
@@ -81,6 +82,6 @@ const mainStyles = StyleSheet.create({
   },
 });
 
-const styles = {...mainStyles, ...weatherCardStyles};
+const styles = {...mainStyles, ...weatherCardStyles, ...MapStyles};
 
 export default styles;

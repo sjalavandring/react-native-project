@@ -1,21 +1,20 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Text, View, Image, FlatList, SafeAreaView, ImageBackground} from 'react-native';
-import mainStyles from './StyleSheet';
+import { Text, View, Image, FlatList, SafeAreaView} from 'react-native';
 import WeatherCard from './Components/WeatherCard/WeatherCard';
 import { useEffect, useState } from 'react'
 import axios from 'axios';
 import styles from './StyleSheet';
 
 import * as Location from 'expo-location'; 
+import Map from './Components/Map/Map';
 
 export default function App() {
   apiKey = '31d7fed8e69148a58cd193626230212'
 
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
-  const [weatherInfo, setWeatherInfo] = useState()
-  const [weatherMeasurSystem, setWeatherMeasurSystem] = useState('celsius')
+  const [weatherInfo, setWeatherInfo] = useState();
+  const [weatherMeasurSystem, setWeatherMeasurSystem] = useState('celsius');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,12 +24,12 @@ export default function App() {
         if (locationPermission.status === 'granted') {
           // Получение текущей позиции
           const position = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
+          // const latitude = position.coords.latitude;
+          // const longitude = position.coords.longitude;
   
           // Здесь вы можете установить значение в состояние
-          setLatitude(latitude);
-          setLongitude(longitude);
+          setLatitude(() => position.coords.latitude);
+          setLongitude(() => position.coords.longitude);
           // Запрос погодных данных
           const response = await axios.get(
             // `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}`
@@ -47,7 +46,7 @@ export default function App() {
       }
     };
     fetchData(); // Вызываем функцию fetchData внутри useEffect
-  }, []);
+  }, [latitude, longitude]);
 
   if (!weatherInfo) {
       return null;
@@ -55,6 +54,11 @@ export default function App() {
 
   function toggleMeasurSystem(systemName) {
     return (systemName == 'celsius') ?  setWeatherMeasurSystem('fahrenheit') : setWeatherMeasurSystem('celsius')
+  }
+
+  function setNewCoords(latitude, longitude) {
+    setLatitude(latitude)
+    setLongitude(longitude)
   }
 
   return (
@@ -93,6 +97,8 @@ export default function App() {
             )}
           </SafeAreaView>
         </View>
+
+        <Map latitude={latitude} longitude={longitude} setNewCoords={setNewCoords}/>
 
       </View>
     </React.Fragment>

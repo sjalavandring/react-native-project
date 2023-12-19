@@ -1,5 +1,5 @@
 import React, {useEffect, memo} from 'react'
-import { Text, View, Image, ImageBackground} from 'react-native'
+import { Text, View, ImageBackground} from 'react-native'
 import styles from '../../StyleSheet'
 
 function dayTimeImage (hour) {
@@ -36,17 +36,14 @@ formatDateTime = (inputString) => {
 }
 
 const WeatherCard = memo(({weatherInfo, currentHour, weatherMeasurSystem, toggleMeasurSystem}) => {
-  if (!weatherInfo) {
+  const date = new Date();
+  if (!weatherInfo || (currentHour > date.getHours())) {
     return null;
   }
 
   function determinateMeasurSustem() {
     return weatherMeasurSystem ==  'celsius' ? weatherInfo.temp_c + '°C' : weatherInfo.temp_f + '°F'
   }
-
-  useEffect(() => {
-    console.log(weatherMeasurSystem)
-  }, [weatherMeasurSystem])
 
   return (
     <ImageBackground style={[styles.weatherBlockBackground, currentHour < 23 ? null : styles.weatherBlockBackgroundLastChild]} source={dayTimeImage(currentHour)} resizeMode='cover'>
