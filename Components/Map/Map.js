@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
 import MapView, { Marker } from 'react-native-maps';
 import styles from '../../StyleSheet';
 
-export default function Map({latitude, longitude, setNewCoords}) {
-  const [selectedCoordinate, setSelectedCoordinate] = useState(null)
+export default function Map({latitude, longitude, setNewCoords, changeMapVisibility}) {
+  // const [selectedCoordinate, setSelectedCoordinate] = useState({"latitude": latitude, "longitude": longitude})
 
   const handleMapPress = (event) => {
     const { coordinate } = event.nativeEvent;
-    setSelectedCoordinate(coordinate);
+    // setSelectedCoordinate(coordinate);
     setNewCoords(coordinate.latitude, coordinate.longitude)
   };
 
@@ -16,24 +16,27 @@ export default function Map({latitude, longitude, setNewCoords}) {
     <React.Fragment>
       <MapView 
         style={styles.map} 
-        showsUserLocation={true} 
+        // showsUserLocation={true} 
         onPress={handleMapPress}
         // onPress={(event) => console.log(event.nativeEvent.coordinate) }
         initialRegion={{
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.02,
-          longitudeDelta: 0.02,
+          latitudeDelta: 0.3,
+          longitudeDelta: 0.3,
         }}
       > 
-        {selectedCoordinate && (
+        {latitude && longitude && (
           <Marker
             title="Погода в этой точке"
-            coordinate={selectedCoordinate}
+            coordinate={{"latitude": latitude, "longitude": longitude}}
           />
         )}
       </MapView>
-      <View style={styles.mapButton}/>
+      <TouchableOpacity style={styles.mapButton} onPress={() => changeMapVisibility(false)}>
+          <Text style={styles.mapButtonFirstChild}/>
+          <Text style={styles.mapButtonLastChild}/>
+      </TouchableOpacity>
     </React.Fragment>
   )
 }

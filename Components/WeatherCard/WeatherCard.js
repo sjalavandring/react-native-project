@@ -37,13 +37,19 @@ formatDateTime = (inputString) => {
 
 const WeatherCard = memo(({weatherInfo, currentHour, weatherMeasurSystem, toggleMeasurSystem}) => {
   const date = new Date();
-  if (!weatherInfo || (currentHour > date.getHours())) {
+  if (!weatherInfo 
+    || (currentHour < date.getHours())
+    ) {
     return null;
   }
 
   function determinateMeasurSustem() {
     return weatherMeasurSystem ==  'celsius' ? weatherInfo.temp_c + '°C' : weatherInfo.temp_f + '°F'
   }
+
+  useEffect(() => {
+    console.log("NewInfo", weatherInfo)
+  }, [])
 
   return (
     <ImageBackground style={[styles.weatherBlockBackground, currentHour < 23 ? null : styles.weatherBlockBackgroundLastChild]} source={dayTimeImage(currentHour)} resizeMode='cover'>

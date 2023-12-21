@@ -6,7 +6,8 @@ const mainStyles = StyleSheet.create({
   body: {
     height: "100%",
     width: "100%",
-    
+    // overflow: 'scroll',
+    // paddingBottom: 190,
   },
 
   header: {
@@ -52,6 +53,8 @@ const mainStyles = StyleSheet.create({
 
   locationName: {
     fontSize: 20,
+    maxWidth: '70%',
+    overflow: 'hidden'
   },
 
   main: {
